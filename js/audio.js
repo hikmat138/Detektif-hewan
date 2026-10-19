@@ -7,10 +7,23 @@ const sounds = {
     salah: new Audio('assets/audio/wrong.mp3')
 };
 
+// Fungsi untuk Menghentikan Seluruh Efek Suara & Narasi yang Sedang Berjalan
+function stopAllAudio() {
+    // 1. Hentikan semua file audio SFX
+    Object.values(sounds).forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+    });
+
+    // 2. Hentikan narasi Text-to-Speech jika sedang berbicara
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
+}
+
 // Fungsi Voice Over (VO) Otomatis menggunakan Text-to-Speech Bawaan Browser
 function speakText(text) {
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Hentikan suara sebelumnya jika ada
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'id-ID'; // Bahasa Indonesia
         utterance.rate = 1.0;     // Kecepatan normal
@@ -21,32 +34,30 @@ function speakText(text) {
 
 // Fungsi Pemutar Audio Utama Game
 function playVO(type, customText = '') {
+    // Hentikan dulu semua suara sebelum memutar suara baru agar tidak bertabrakan
+    stopAllAudio();
+
     if (type === 'putar') {
-        sounds.putar.currentTime = 0;
         sounds.putar.play().catch(e => console.log(e));
         speakText("Ayo kita acak rodanya!");
     } 
     else if (type === 'terpilih') {
-        sounds.pemenang.currentTime = 0;
         sounds.pemenang.play().catch(e => console.log(e));
         setTimeout(() => {
             speakText(`Selamat! Detektif ${customText}, giliranmu buka kotak misteri!`);
         }, 600);
     } 
     else if (type === 'buka_kotak') {
-        sounds.bukaKotak.currentTime = 0;
         sounds.bukaKotak.play().catch(e => console.log(e));
         speakText("Wah, kotak misterimu terbuka! Siap-siap untuk tantanganmu!");
     } 
     else if (type === 'benar') {
-        sounds.benar.currentTime = 0;
         sounds.benar.play().catch(e => console.log(e));
         setTimeout(() => {
             speakText(`Hebat sekali! Jawabanmu tepat, kamu dapat sepuluh poin!`);
         }, 400);
     } 
     else if (type === 'salah') {
-        sounds.salah.currentTime = 0;
         sounds.salah.play().catch(e => console.log(e));
         setTimeout(() => {
             speakText(`Ayo coba lagi! Tetap semangat ya!`);
