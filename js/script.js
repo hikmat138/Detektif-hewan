@@ -9,64 +9,84 @@ const students = [
 
 let scores = {};
 students.forEach(s => scores[s] = 0);
-let currentStudent = students[0];
+let currentStudent = "Nama Siswa";
+let isSpinning = false;
 
-// Switch Screen
 function showScreen(id) {
     document.querySelectorAll('.view-screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     if (id === 'screenScore') renderScoreboard();
 }
 
-// Wheel Setup
 const canvas = document.getElementById('wheelCanvas');
 const ctx = canvas.getContext('2d');
 
+// PENGGAMBARAN RODA DENGAN CANVAS (PAS PRESI DI TENGAH 200, 200)
 function drawWheel() {
     const numSlices = students.length;
     const sliceAngle = (2 * Math.PI) / numSlices;
-    ctx.clearRect(0, 0, 300, 300);
+    ctx.clearRect(0, 0, 400, 400);
     
     students.forEach((name, i) => {
+        const angle = i * sliceAngle;
+        
+        // 1. Gambar Potongan Roda
         ctx.beginPath();
         ctx.fillStyle = i % 2 === 0 ? '#ffb703' : '#00b4d8';
-        ctx.moveTo(150, 150);
-        ctx.arc(150, 150, 140, i * sliceAngle, (i + 1) * sliceAngle);
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 195, angle, angle + sliceAngle);
         ctx.fill();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#ffffff';
         ctx.stroke();
         
+        // 2. Teks Nama Murid (Sangat Jelas)
         ctx.save();
-        ctx.translate(150, 150);
-        ctx.rotate(i * sliceAngle + sliceAngle / 2);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 9px Nunito';
-        ctx.fillText(name.substring(0, 8), 65, 4);
+        ctx.translate(200, 200);
+        ctx.rotate(angle + sliceAngle / 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px Nunito, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = 2;
+        
+        ctx.fillText(name, 185, 4);
         ctx.restore();
     });
 }
 
 let currentRotation = 0;
+
 function spinWheel() {
-    playVO('putar');
-    const randomDegrees = Math.floor(3600 + Math.random() * 360);
-    currentRotation += randomDegrees;
+    if (isSpinning) return;
+    isSpinning = true;
+    
+    if (typeof playVO === 'function') playVO('putar');
+    
+    const randomExtraDegrees = Math.floor(Math.random() * 360) + 1800;
+    currentRotation += randomExtraDegrees;
+    
+    canvas.style.transition = "transform 4s cubic-bezier(0.15, 0.99, 0.18, 1)";
     canvas.style.transform = `rotate(${currentRotation}deg)`;
     
     setTimeout(() => {
+        isSpinning = false;
+        
         const actualDeg = currentRotation % 360;
         const sliceSize = 360 / students.length;
-        const selectedIndex = Math.floor((360 - (actualDeg % 360)) / sliceSize) % students.length;
+        const selectedIndex = Math.floor((360 - (actualDeg % 360) + 270) % 360 / sliceSize) % students.length;
         
         currentStudent = students[selectedIndex];
+        
         document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
         document.getElementById('boxStudentTitle').innerText = `Detektif ${currentStudent}, Buka Kotak Misterimu! 🎁`;
+        
         showScreen('screenBox');
     }, 4000);
 }
 
-// Mystery Box Generator (Acak 1 dari 5 Jenis Tantangan)
 function openMysteryBox() {
-    playVO('putar');
+    if (typeof playVO === 'function') playVO('putar');
     const challengeTypes = [1, 2, 3, 4, 5];
     const randomType = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
     
@@ -79,7 +99,6 @@ function loadChallenge(type) {
     const title = document.getElementById('challengeTitle');
     body.innerHTML = '';
 
-    // TIPE 1: Pilihan Ganda Gambar
     if (type === 1) {
         title.innerText = "Tantangan 1: Pilihan Ganda Perkembangbiakan";
         body.innerHTML = `
@@ -91,77 +110,37 @@ function loadChallenge(type) {
                 <button class="btn-opt" onclick="evalAnswer(false)">OVOVIVIPAR</button>
             </div>
         `;
-    } 
-    // TIPE 2: Benar / Salah
-    else if (type === 2) {
+    } else if (type === 2) {
         title.innerText = "Tantangan 2: Pernyataan Benar atau Salah";
         body.innerHTML = `
             <img src="assets/images/ayam.jpg" class="img-challenge">
-            <p style="font-weight:800; font-size:1.2rem;">Pernyataan: "Ayam adalah hewan Ovipar yang berkembang biak dengan cara melahirkan."</p>
+            <p style="font-weight:800; font-size:1.2rem;">Pernyataan: "Ayam berkembang biak dengan cara melahirkan."</p>
             <div class="opt-grid">
                 <button class="btn-opt" style="background:#38b000; color:white;" onclick="evalAnswer(false)">BENAR</button>
                 <button class="btn-opt" style="background:#d90429; color:white;" onclick="evalAnswer(true)">SALAH</button>
             </div>
         `;
-    }
-    // TIPE 3: Mengurutkan Siklus Hidup
-    else if (type === 3) {
-        title.innerText = "Tantangan 3: Urutkan Siklus Hidup Ayam!";
+    } else {
+        title.innerText = "Tantangan 3: Urutkan Siklus Hidup!";
         body.innerHTML = `
-            <p style="font-weight:800;">Tap nomor urut yang tepat di PID!</p>
+            <p style="font-weight:800;">Urutan Siklus Hidup yang benar:</p>
             <div class="opt-grid">
-                <div class="drop-box">1. Telur <br><img src="assets/images/ayam.jpg" style="width:70px; margin-top:5px;"></div>
+                <div class="drop-box">1. Telur</div>
                 <div class="drop-box">2. Anak Ayam</div>
                 <div class="drop-box">3. Ayam Dewasa</div>
             </div>
-            <button class="btn-main" style="margin-top:15px;" onclick="evalAnswer(true)">PERIKSA JAWABAN</button>
+            <button class="btn-green-3d" style="margin-top:15px;" onclick="evalAnswer(true)">PERIKSA JAWABAN</button>
         `;
     }
-    // TIPE 4: Drag & Drop Pengelompokan (PID Touch Click)
-    else if (type === 4) {
-        title.innerText = "Tantangan 4: Kelompokkan Hewan Ovipar!";
-        body.innerHTML = `
-            <p style="font-weight:800;">Pilih gambar hewan yang bertelur (Ovipar):</p>
-            <div class="opt-grid">
-                <img src="assets/images/bebek.jpg" class="drag-item" onclick="evalAnswer(true)">
-                <img src="assets/images/sapi.jpg" class="drag-item" onclick="evalAnswer(false)">
-                <img src="assets/images/kambing.jpg" class="drag-item" onclick="evalAnswer(false)">
-            </div>
-        `;
-    }
-    // TIPE 5: Menjodohkan Induk & Anak
-    else if (type === 5) {
-        title.innerText = "Tantangan 5: Jodohkan Induk & Anaknya!";
-        body.innerHTML = `
-            <div class="matching-grid">
-                <div class="match-col">
-                    <p style="font-weight:800;">Induk</p>
-                    <img src="assets/images/kucing.jpg" class="match-card" onclick="selectMatch(this, 'kucing')">
-                </div>
-                <div class="match-col">
-                    <p style="font-weight:800;">Anak</p>
-                    <img src="assets/images/kucing.jpg" class="match-card" onclick="selectMatch(this, 'anak_kucing')">
-                </div>
-            </div>
-            <button class="btn-main" style="margin-top:15px;" onclick="evalAnswer(true)">COCOKKAN!</button>
-        `;
-    }
-}
-
-let selectedMatch = null;
-function selectMatch(el, id) {
-    if (selectedMatch) selectedMatch.classList.remove('selected');
-    selectedMatch = el;
-    el.classList.add('selected');
 }
 
 function evalAnswer(isCorrect) {
     if (isCorrect) {
-        scores[currentStudent] += 10;
-        playVO('benar');
+        if (currentStudent !== "Nama Siswa") scores[currentStudent] += 10;
+        if (typeof playVO === 'function') playVO('benar');
         showPopup('BENAR', `Hebat Detektif ${currentStudent}! Jawabanmu Tepat (+10 Poin)`);
     } else {
-        playVO('salah');
+        if (typeof playVO === 'function') playVO('salah');
         showPopup('SALAH', `Ayo Coba Lagi Detektif ${currentStudent}!`);
     }
 }
@@ -200,4 +179,7 @@ function renderScoreboard() {
 }
 
 // Inisialisasi awal
-drawWheel();
+window.onload = function() {
+    drawWheel();
+    document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
+};
