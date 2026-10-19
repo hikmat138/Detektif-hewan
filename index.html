@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detektif Siklus Hewan - SD Negeri Ranca Tales</title>
+    <!-- Google Fonts untuk Tampilan Ceria Anak SD -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-green: #70e000;
+            --primary-yellow: #ffb703;
+            --card-bg: #ffffff;
+            --font-title: 'Fredoka One', cursive;
+            --font-body: 'Nunito', sans-serif;
+            --wood-color: #8d5b4c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(180deg, #38b000 0%, #007200 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            color: #2b2b2b;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16 / 9;
+            background: #e9f5db;
+            border: 10px solid #ffff3f;
+            border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--wood-color);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            border-bottom: 5px solid #5a382d;
+        }
+
+        .active-student-badge {
+            background: #ff0054;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 4px 0 #9e0031;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-top {
+            background: #00b4d8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-family: var(--font-title);
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0077b6;
+            transition: transform 0.1s;
+        }
+
+        .btn-top:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        /* Main View Screen */
+        .view-screen {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .view-screen.active {
+            display: flex;
+        }
+
+        /* Main Menu / Home */
+        .game-title {
+            font-family: var(--font-title);
+            font-size: 3rem;
+            color: #d90429;
+            text-shadow: 3px 3px 0px #fff, 6px 6px 0px #000;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #2b2b2b;
+            margin-bottom: 25px;
+            background: #ffea00;
+            padding: 5px 20px;
+            border-radius: 15px;
+        }
+
+        .menu-grid {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn-main {
+            background: #70e000;
+            color: #004b23;
+            border: 4px solid #fff;
+            padding: 15px 30px;
+            border-radius: 20px;
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #38b000;
+        }
+
+        .btn-main:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #38b000;
+        }
+
+        /* Spinner Wheel View */
+        .wheel-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin-bottom: 20px;
+        }
+
+        .wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #ff0054;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
+            transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ffff3f;
+            z-index: 10;
+        }
+
+        /* Scoreboard Grid */
+        .scoreboard-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            width: 100%;
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 15px;
+        }
+
+        .score-card {
+            background: white;
+            padding: 8px;
+            border-radius: 10px;
+            border: 2px solid #ccc;
+            font-size: 0.85rem;
+            font-weight: 800;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .score-card.active-user {
+            border-color: #ff0054;
+            background: #ffe5ec;
+        }
+
+        /* Mission Styles */
+        .mission-header {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            color: #3a0ca3;
+            margin-bottom: 15px;
+        }
+
+        .animal-frame {
+            width: 220px;
+            height: 160px;
+            background: white;
+            border: 6px solid var(--wood-color);
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .animal-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .options-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-option {
+            background: #ffb703;
+            color: #000;
+            border: 3px solid #fff;
+            padding: 12px 22px;
+            border-radius: 15px;
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #fb8500;
+        }
+
+        .btn-option:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #fb8500;
+        }
+
+        /* Sequence Slot */
+        .sequence-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .seq-slot {
+            width: 110px;
+            height: 110px;
+            border: 3px dashed #3a0ca3;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+
+        .seq-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        /* Popup Feedback */
+        .popup-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .popup-overlay.active {
+            display: flex;
+        }
+
+        .popup-card {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            border: 6px solid #ffb703;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .popup-title {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .popup-title.correct { color: #38b000; }
+        .popup-title.wrong { color: #d90429; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <!-- Top Bar Navigation -->
+    <div class="top-bar">
+        <div class="active-student-badge" id="activeStudentLabel">Pilih Siswa</div>
+        <div class="action-btns">
+            <button class="btn-top" onclick="showScreen('screenMenu')">🏠 Menu</button>
+            <button class="btn-top" onclick="showScreen('screenWheel')">🎰 Roda Acak</button>
+            <button class="btn-top" onclick="showScreen('screenScore')">📊 Kotak Nilai</button>
+        </div>
+    </div>
+
+    <!-- 1. HOME / MENU SCREEN -->
+    <div id="screenMenu" class="view-screen active">
+        <h1 class="game-title">DETEKTIF SIKLUS HEWAN 🔍</h1>
+        <div class="subtitle">Media Interaktif PID Class 3 - SD Negeri Ranca Tales</div>
+        <div class="menu-grid">
+            <button class="btn-main" onclick="showScreen('screenWheel')">🎲 ACARK DULUAN (RODA)</button>
+            <button class="btn-main" onclick="startMission(1)">🚀 MULAI MISI 1</button>
+        </div>
+    </div>
+
+    <!-- 2. SPINNER WHEEL SCREEN -->
+    <div id="screenWheel" class="view-screen">
+        <h2 class="mission-header">Roda Pemilih Detektif 🎰</h2>
+        <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <canvas id="wheelCanvas" class="wheel-canvas" width="300" height="300"></canvas>
+        </div>
+        <button class="btn-main" onclick="spinWheel()">PUTAR RODA!</button>
+    </div>
+
+    <!-- 3. MISSION 1 SCREEN (PERKEMBANGBIAKAN) -->
+    <div id="screenMission1" class="view-screen">
+        <h2 class="mission-header" id="m1Title">Misi 1: Golongkan Hewan Ini!</h2>
+        <div class="animal-frame">
+            <img id="m1Image" src="" alt="Gambar Hewan">
+        </div>
+        <div class="options-row">
+            <button class="btn-option" onclick="checkM1('OVIPAR')">OVIPAR (Bertelur)</button>
+            <button class="btn-option" onclick="checkM1('VIVIPAR')">VIVIPAR (Melahirkan)</button>
+            <button class="btn-option" onclick="checkM1('OVOVIVIPAR')">OVOVIVIPAR</button>
+        </div>
+    </div>
+
+    <!-- 4. MISSION 2 SCREEN (SEQUENCING SIKLUS HIDUP) -->
+    <div id="screenMission2" class="view-screen">
+        <h2 class="mission-header">Misi 2: Urutkan Siklus Hidup Kucing!</h2>
+        <div class="sequence-container">
+            <div class="seq-slot" id="slot1" onclick="placeCard(1)">Tahap 1</div>
+            <div class="seq-slot" id="slot2" onclick="placeCard(2)">Tahap 2</div>
+            <div class="seq-slot" id="slot3" onclick="placeCard(3)">Tahap 3</div>
+        </div>
+        <div class="options-row" id="m2Cards">
+            <!-- Cards loaded via JS -->
+        </div>
+    </div>
+
+    <!-- 5. SCOREBOARD SCREEN -->
+    <div id="screenScore" class="view-screen">
+        <h2 class="mission-header">Kotak Nilai 34 Murid 📊</h2>
+        <div class="scoreboard-grid" id="scoreGrid"></div>
+    </div>
+
+    <!-- POPUP FEEDBACK OVERLAY -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-card">
+            <div class="popup-title" id="popupTitle">HEBAT!</div>
+            <p id="popupDesc" style="font-size:1.2rem; font-weight:800; margin-bottom:20px;">Jawabanmu Benar +10 Poin!</p>
+            <button class="btn-main" onclick="closePopup()">LANJUTAN</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Database 34 Siswa Class 3
+    const students = [
+        "Abizar", "Ahmad Maftuhi", "Ali Bardan", "Aqila", "Ariijna", "Aulia",
+        "Deni", "Dinda Bela", "Fano", "Faunio", "Hana Wulan", "Hazmi",
+        "Jallaludin", "Muayyyad", "Afian", "Dana", "Fauzan", "Ilyas",
+        "Imron", "Kenzi", "Nabil", "Naelul", "Nafisha", "Naufal",
+        "Neisya", "Raesha", "Raziq", "Siren", "Syahdan", "Siti Hana",
+        "Suci Indriyani", "Tania", "Ulufiyah", "Zea"
+    ];
+
+    let scores = {};
+    students.forEach(s => scores[s] = 0);
+    let currentStudent = students[0];
+
+    // Data Misi 1
+    const m1Data = [
+        { name: "Kucing", img: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400", type: "VIVIPAR" },
+        { name: "Ayam", img: "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=400", type: "OVIPAR" },
+        { name: "Ular Kadut", img: "https://images.unsplash.com/photo-1531386151447-fd76ad50012f?w=400", type: "OVOVIVIPAR" }
+    ];
+    let m1Index = 0;
+
+    // Web Audio API for Sound Effects
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        if (type === 'correct') {
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+            gain.gain.fadeOut(0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        } else {
+            osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+            osc.frequency.setValueAtTime(196, audioCtx.currentTime + 0.15); // G3
+            gain.gain.fadeOut(0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+    }
+
+    // Navigation Between Screens
+    function showScreen(id) {
+        document.querySelectorAll('.view-screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if (id === 'screenScore') renderScoreboard();
+    }
+
+    // Init Wheel
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    function drawWheel() {
+        const numSlices = students.length;
+        const sliceAngle = (2 * Math.PI) / numSlices;
+        ctx.clearRect(0, 0, 300, 300);
+        
+        students.forEach((name, i) => {
+            ctx.beginPath();
+            ctx.fillStyle = i % 2 === 0 ? '#ffb703' : '#00b4d8';
+            ctx.moveTo(150, 150);
+            ctx.arc(150, 150, 140, i * sliceAngle, (i + 1) * sliceAngle);
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.save();
+            ctx.translate(150, 150);
+            ctx.rotate(i * sliceAngle + sliceAngle / 2);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 9px Nunito';
+            ctx.fillText(name.substring(0, 8), 70, 4);
+            ctx.restore();
+        });
+    }
+
+    let currentRotation = 0;
+    function spinWheel() {
+        const randomDegrees = Math.floor(3600 + Math.random() * 360);
+        currentRotation += randomDegrees;
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+        
+        setTimeout(() => {
+            const actualDeg = currentRotation % 360;
+            const sliceSize = 360 / students.length;
+            const selectedIndex = Math.floor((360 - (actualDeg % 360)) / sliceSize) % students.length;
+            currentStudent = students[selectedIndex];
+            document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
+            showPopup('SPINNER', `Giliran **${currentStudent}** Maju ke PID!`);
+        }, 4000);
+    }
+
+    // Mission 1 Logic
+    function startMission(num) {
+        if (num === 1) {
+            m1Index = 0;
+            loadM1();
+            showScreen('screenMission1');
+        }
+    }
+
+    function loadM1() {
+        const data = m1Data[m1Index];
+        document.getElementById('m1Title').innerText = `Misi 1: Bagaimana Cara ${data.name} Berkembang Biak?`;
+        document.getElementById('m1Image').src = data.img;
+    }
+
+    function checkM1(type) {
+        if (type === m1Data[m1Index].type) {
+            scores[currentStudent] += 10;
+            playSound('correct');
+            showPopup('BENAR', `Hebat ${currentStudent}! Jawabanmu Tepat (+10 Poin)`);
+        } else {
+            playSound('wrong');
+            showPopup('SALAH', `Ayo Coba Lagi ${currentStudent}!`);
+        }
+    }
+
+    function showPopup(status, message) {
+        const overlay = document.getElementById('popupOverlay');
+        const title = document.getElementById('popupTitle');
+        const desc = document.getElementById('popupDesc');
+        
+        if (status === 'BENAR' || status === 'SPINNER') {
+            title.innerText = status === 'BENAR' ? 'HEBAT! 🌟' : 'GILIRAN BERAKSI! 🎯';
+            title.className = 'popup-title correct';
+        } else {
+            title.innerText = 'SANGAT DEKAT! 💪';
+            title.className = 'popup-title wrong';
+        }
+        
+        desc.innerText = message;
+        overlay.classList.add('active');
+    }
+
+    function closePopup() {
+        document.getElementById('popupOverlay').classList.remove('active');
+    }
+
+    function renderScoreboard() {
+        const grid = document.getElementById('scoreGrid');
+        grid.innerHTML = '';
+        students.forEach(s => {
+            const card = document.createElement('div');
+            card.className = `score-card ${s === currentStudent ? 'active-user' : ''}`;
+            card.innerHTML = `<div>${s}</div><div style="color:#ff0054; font-size:1.1rem;">⭐ ${scores[s]}</div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    // Initial Setup
+    drawWheel();
+    document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
+</script>
+</body>
+</html>
