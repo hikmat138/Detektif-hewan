@@ -9,7 +9,6 @@
     --green-btn: linear-gradient(180deg, #9ef01a 0%, #38b000 50%, #007200 100%);
 }
 
-/* Universal Selector Diperbaiki */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -28,10 +27,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 0;
     overflow-x: hidden;
 }
 
+/* KONTAINER UTAMA (RESPONSIF DESKTOP & HP) */
 .game-container {
     width: 100%;
     max-width: 1100px;
@@ -49,7 +49,7 @@ body {
 /* TOP BAR */
 .top-bar {
     background: linear-gradient(180deg, #9c5821 0%, #6d3910 100%);
-    padding: 10px 25px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -57,41 +57,42 @@ body {
     border-bottom: 6px solid var(--wood-dark);
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
 }
 
 .active-student-badge {
     background: linear-gradient(180deg, #ff2a6d 0%, #d90429 100%);
-    padding: 8px 22px;
+    padding: 6px 16px;
     border-radius: 25px;
     font-family: var(--font-title);
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     color: #fff;
     text-shadow: 2px 2px 0px #700013;
     border: 3px solid #ff9ebb;
-    box-shadow: 0 5px 0 #800016;
+    box-shadow: 0 4px 0 #800016;
 }
 
 .action-btns { 
     display: flex; 
-    gap: 12px; 
+    gap: 8px; 
+    flex-wrap: wrap;
 }
 
 .btn-top {
     background: linear-gradient(180deg, #00b4d8 0%, #0077b6 100%);
     color: white;
     border: 2px solid #90e0ef;
-    padding: 8px 18px;
-    border-radius: 15px;
+    padding: 6px 14px;
+    border-radius: 12px;
     font-family: var(--font-btn);
-    font-size: 1.1rem;
+    font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 4px 0 #004b78;
+    box-shadow: 0 3px 0 #004b78;
     transition: transform 0.1s;
 }
 
 .btn-top:active {
-    transform: translateY(3px);
+    transform: translateY(2px);
     box-shadow: 0 1px 0 #004b78;
 }
 
@@ -102,7 +103,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 15px;
     text-align: center;
     width: 100%;
     overflow-y: auto;
@@ -114,164 +115,163 @@ body {
 
 .banner-title {
     background: linear-gradient(180deg, #a05a22 0%, #67340d 100%);
-    border: 5px solid #ffcc00;
-    border-radius: 25px;
-    padding: 6px 30px;
-    box-shadow: 0 8px 0 var(--wood-dark);
+    border: 4px solid #ffcc00;
+    border-radius: 20px;
+    padding: 6px 20px;
+    box-shadow: 0 6px 0 var(--wood-dark);
     margin-bottom: 10px;
 }
 
 .game-title {
     font-family: var(--font-title);
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     color: #ffea00;
-    text-shadow: 3px 3px 0 #d90429, -2px -2px 0 #d90429, 2px -2px 0 #d90429, -2px 2px 0 #d90429, 0px 5px 0px #800013;
+    text-shadow: 2px 2px 0 #d90429, 0px 4px 0px #800013;
 }
 
 .cards-row { 
     display: flex; 
-    gap: 20px; 
+    gap: 15px; 
     margin-bottom: 15px; 
     flex-wrap: wrap;
     justify-content: center;
 }
 
 .animal-card-3d {
-    width: 180px;
+    width: 150px;
     background: linear-gradient(180deg, #b06b32 0%, #6e3a12 100%);
-    border: 5px solid #ffe066;
-    border-radius: 20px;
-    padding: 8px;
-    box-shadow: 0 8px 0 var(--wood-dark);
-    transition: transform 0.2s;
+    border: 4px solid #ffe066;
+    border-radius: 18px;
+    padding: 6px;
+    box-shadow: 0 6px 0 var(--wood-dark);
 }
 
 .animal-card-3d img {
     width: 100%; 
-    height: 130px; 
+    height: 110px; 
     object-fit: cover; 
-    border-radius: 12px; 
-    border: 3px solid #4a2306;
+    border-radius: 10px; 
+    border: 2px solid #4a2306;
 }
 
 .animal-card-3d .label {
     font-family: var(--font-btn); 
-    font-size: 1.2rem; 
+    font-size: 1.1rem; 
     color: #fff; 
-    margin-top: 5px;
+    margin-top: 4px;
 }
 
 .btn-green-3d {
     background: var(--green-btn);
     color: #ffffff;
     border: 4px solid #ccff33;
-    padding: 10px 35px;
-    border-radius: 50px;
+    padding: 10px 30px;
+    border-radius: 40px;
     font-family: var(--font-title);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
-    box-shadow: 0 8px 0 #004b23;
+    box-shadow: 0 6px 0 #004b23;
     transition: transform 0.1s;
 }
 
 .btn-green-3d:active {
-    transform: translateY(4px);
-    box-shadow: 0 4px 0 #004b23;
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #004b23;
 }
 
 /* RODA ACAK DETEKTIF */
 .wheel-wrapper {
     position: relative;
-    width: 360px;
-    height: 360px;
-    margin: 5px auto 10px auto;
+    width: 300px;
+    height: 300px;
+    margin: 5px auto;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .wheel-canvas {
-    width: 360px !important;
-    height: 360px !important;
+    width: 300px !important;
+    height: 300px !important;
     border-radius: 50%;
-    border: 8px solid #ff0054;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    border: 6px solid #ff0054;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     background: #ffffff;
 }
 
 .wheel-pointer {
     position: absolute;
-    top: -12px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 18px solid transparent;
-    border-right: 18px solid transparent;
-    border-top: 30px solid #ffff3f;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 25px solid #ffff3f;
     z-index: 30;
-    filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.5));
+    filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.5));
 }
 
 /* KOTAK MISTERI (MYSTERY BOX) */
 .mystery-box-container {
     cursor: pointer;
-    margin: 15px 0;
+    margin: 10px 0;
 }
 
 .mystery-box {
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     background: linear-gradient(180deg, #ffc107 0%, #ff8f00 100%);
-    border: 6px solid #ffe082;
-    border-radius: 25px;
+    border: 5px solid #ffe082;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 3.5rem;
-    box-shadow: 0 10px 0 #c77700, 0 15px 20px rgba(0,0,0,0.3);
+    font-size: 3rem;
+    box-shadow: 0 8px 0 #c77700, 0 12px 15px rgba(0,0,0,0.3);
     animation: bounce 1.5s infinite alternate;
     margin: 0 auto;
 }
 
 @keyframes bounce {
     0% { transform: translateY(0); }
-    100% { transform: translateY(-10px); }
+    100% { transform: translateY(-8px); }
 }
 
 .box-hint {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 800;
     color: #5a382d;
     background: #fff3cd;
-    padding: 6px 20px;
-    border-radius: 15px;
+    padding: 6px 15px;
+    border-radius: 12px;
     border: 2px dashed #ffc107;
 }
 
 /* ARENA TANTANGAN */
 .challenge-body {
     width: 100%;
-    max-width: 850px;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .img-challenge {
-    width: 200px;
-    height: 130px;
+    width: 170px;
+    height: 110px;
     object-fit: cover;
-    border-radius: 15px;
-    border: 4px solid var(--wood-main);
-    box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+    border-radius: 12px;
+    border: 3px solid var(--wood-main);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .opt-grid {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -280,32 +280,30 @@ body {
     background: linear-gradient(180deg, #ffb703 0%, #fb8500 100%);
     color: #000;
     border: 3px solid #fff;
-    padding: 10px 20px;
-    border-radius: 18px;
+    padding: 8px 16px;
+    border-radius: 15px;
     font-family: var(--font-btn);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    box-shadow: 0 5px 0 #d46900;
+    box-shadow: 0 4px 0 #d46900;
     transition: transform 0.1s;
 }
 
 .btn-opt:active {
-    transform: translateY(3px);
-    box-shadow: 0 2px 0 #d46900;
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #d46900;
 }
 
 /* POPUP FEEDBACK */
 .popup-overlay {
     position: absolute; 
-    top: 0; 
-    left: 0; 
-    right: 0; 
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.7); 
     display: none; 
     justify-content: center; 
     align-items: center; 
     z-index: 100;
+    padding: 15px;
 }
 
 .popup-overlay.active { 
@@ -314,54 +312,49 @@ body {
 
 .popup-card {
     background: #ffffff; 
-    padding: 30px; 
-    border-radius: 30px; 
-    border: 8px solid #ffc107; 
+    padding: 25px; 
+    border-radius: 25px; 
+    border: 6px solid #ffc107; 
     text-align: center; 
-    max-width: 400px;
-    width: 90%;
+    max-width: 350px;
+    width: 100%;
 }
 
 .popup-title { 
     font-family: var(--font-title); 
-    font-size: 2.2rem; 
-    margin-bottom: 10px; 
+    font-size: 1.8rem; 
+    margin-bottom: 8px; 
 }
 
-.popup-title.correct { 
-    color: #38b000; 
-}
-
-.popup-title.wrong { 
-    color: #d90429; 
-}
+.popup-title.correct { color: #38b000; }
+.popup-title.wrong { color: #d90429; }
 
 .popup-desc { 
-    font-size: 1.2rem; 
+    font-size: 1.1rem; 
     font-weight: 800; 
-    margin-bottom: 20px; 
+    margin-bottom: 15px; 
 }
 
 /* SCOREBOARD GRID */
 .scoreboard-grid {
     display: grid; 
-    grid-template-columns: repeat(6, 1fr); 
-    gap: 8px; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 6px; 
     width: 100%; 
-    max-height: 280px; 
+    max-height: 250px; 
     overflow-y: auto; 
-    padding: 10px; 
+    padding: 8px; 
     background: rgba(255,255,255,0.9); 
-    border-radius: 20px;
+    border-radius: 15px;
 }
 
 .score-card { 
     background: white; 
-    padding: 8px 5px; 
-    border-radius: 12px; 
+    padding: 6px 4px; 
+    border-radius: 10px; 
     border: 2px solid #ccc; 
     font-weight: 800; 
-    font-size: 0.85rem; 
+    font-size: 0.8rem; 
 }
 
 .score-card.active-user { 
@@ -369,25 +362,43 @@ body {
     background: #ffe5ec; 
 }
 
-/* RESPONSIF UNTUK LAYAR KECIL / HP / PID */
+/* KHUSUS HP / MOBILE (LAYOUT PENUH 100% LAYAR) */
 @media screen and (max-width: 768px) {
+    body {
+        padding: 0;
+        align-items: stretch;
+    }
+
     .game-container {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100%;
         aspect-ratio: auto;
-        min-height: 100vh;
-        border-radius: 15px;
-        border-width: 5px;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .top-bar {
+        padding: 6px 10px;
+    }
+
+    .active-student-badge {
+        font-size: 0.95rem;
+        padding: 4px 10px;
     }
 
     .game-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
     }
 
     .scoreboard-grid {
         grid-template-columns: repeat(2, 1fr);
+        max-height: calc(100vh - 150px);
     }
 
     .wheel-wrapper, .wheel-canvas {
-        width: 280px !important;
-        height: 280px !important;
+        width: 250px !important;
+        height: 250px !important;
     }
 }
