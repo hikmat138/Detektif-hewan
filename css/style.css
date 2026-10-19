@@ -219,3 +219,37 @@ body {
 }
 .popup-title.correct { color: #38b000; text-shadow: 2px 2px 0 #004b23; }
 .popup-title.wrong { color: #d90429; text-shadow: 2px 2px 0 #800016; }
+
+/* Pembungkus Roda Acak - Ukuran Lebih Besar & Proporsional */
+.wheel-wrapper {
+    position: relative;
+    width: 440px;
+    height: 440px;
+    margin: 10px auto 15px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wheel-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50%;
+    border: 10px solid #ff0054;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4), inset 0 0 15px rgba(0,0,0,0.3);
+}
+
+/* Panah Penunjuk Roda di Atas */
+.wheel-pointer {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 35px solid #ffff3f;
+    z-index: 20;
+    filter: drop-shadow(0px 4px 3px rgba(0,0,0,0.5));
+}
