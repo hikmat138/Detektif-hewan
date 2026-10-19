@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detektif Siklus Hewan - SD Negeri Ranca Tales</title>
-    
-    <!-- Google Fonts untuk Tampilan Kartun 3D Ceria -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Sniglet:wght@800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
-    
-    <!-- CSS Terpisah -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="game-container">
-    <!-- Top Navigation Bar -->
+    <!-- Top Bar Navigation -->
     <div class="top-bar">
-        <div class="active-student-badge" id="activeStudentLabel">Detektif: Abizar</div>
+        <!-- Diubah dari Abizar menjadi Nama Siswa -->
+        <div class="active-student-badge" id="activeStudentLabel">Detektif: Nama Siswa</div>
         <div class="action-btns">
             <button class="btn-top" onclick="showScreen('screenMenu')">🏠 Menu</button>
             <button class="btn-top" onclick="showScreen('screenWheel')">🎰 Roda Acak</button>
@@ -24,14 +21,11 @@
         </div>
     </div>
 
-    <!-- SCREEN 1: MENU UTAMA / COVER GAME -->
+    <!-- SCREEN 1: MENU UTAMA -->
     <div id="screenMenu" class="view-screen active">
-        <!-- Banner Judul Wood 3D -->
         <div class="banner-title">
             <h1 class="game-title">Detektif Siklus Hewan 🔍</h1>
         </div>
-
-        <!-- 3 Kartu Foto Asli Bingkai Kayu -->
         <div class="cards-row">
             <div class="animal-card-3d">
                 <img src="assets/images/kucing.jpg" alt="Kucing">
@@ -46,33 +40,30 @@
                 <div class="label">Penyu</div>
             </div>
         </div>
+        <button class="btn-green-3d" onclick="showScreen('screenWheel')">▶ MULAI MAIN</button>
+    </div>
 
-        <!-- Tombol Hijau 3D 'MULAI MAIN' -->
-        <button class="btn-green-3d" onclick="showScreen('screenWheel')">
-            ▶ MULAI MAIN
+    <!-- SCREEN 2: RODA ACAK -->
+    <div id="screenWheel" class="view-screen">
+        <div class="banner-title" style="padding: 5px 25px; margin-bottom: 5px;">
+            <h2 class="game-title" style="font-size: 1.8rem;">Roda Pemilih Detektif 🎰</h2>
+        </div>
+        
+        <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <!-- Canvas disamakan ukurannya dengan CSS (400x400) -->
+            <canvas id="wheelCanvas" class="wheel-canvas" width="400" height="400"></canvas>
+        </div>
+        
+        <button class="btn-green-3d" style="font-size: 1.3rem; padding: 10px 35px;" onclick="spinWheel()">
+            🎲 ACAK SISWA!
         </button>
     </div>
 
-<!-- SCREEN 2: RODA ACAK NAMA (34 SISWA) -->
-<div id="screenWheel" class="view-screen">
-    <div class="banner-title" style="padding: 5px 25px; margin-bottom: 10px;">
-        <h2 class="game-title" style="font-size: 1.8rem;">Roda Pemilih Detektif 🎰</h2>
-    </div>
-    
-    <div class="wheel-wrapper">
-        <div class="wheel-pointer"></div>
-        <canvas id="wheelCanvas" class="wheel-canvas" width="800" height="800"></canvas>
-    </div>
-    
-    <button class="btn-green-3d" style="font-size: 1.3rem; padding: 10px 35px;" onclick="spinWheel()">
-        🎲 ACAK SISWA!
-    </button>
-</div>
-
-    <!-- SCREEN 3: KOTAK MISTERI (MYSTERY BOX) -->
+    <!-- SCREEN 3: KOTAK MISTERI -->
     <div id="screenBox" class="view-screen">
         <h2 class="mission-header" id="boxStudentTitle" style="font-family: var(--font-title); font-size: 2rem; color: #5a382d; margin-bottom: 10px;">
-            Detektif Abizar, Buka Kotak Misterimu! 🎁
+            Detektif, Buka Kotak Misterimu! 🎁
         </h2>
         <div class="mystery-box-container" onclick="openMysteryBox()">
             <div class="mystery-box">
@@ -83,39 +74,32 @@
         <p class="box-hint">Sentuh / Tap Kotak Misteri di PID untuk Membuka Tantangan!</p>
     </div>
 
-    <!-- SCREEN 4: ARENA TANTANGAN DINAMIS (5 VARIASI) -->
+    <!-- SCREEN 4: ARENA TANTANGAN -->
     <div id="screenChallenge" class="view-screen">
         <h2 class="mission-header" id="challengeTitle" style="font-family: var(--font-title); font-size: 1.8rem; color: #3a0ca3; margin-bottom: 15px;">
             Tantangan Misteri
         </h2>
-        <div id="challengeBody" class="challenge-body">
-            <!-- Konten tantangan di-load secara dinamis via script.js -->
-        </div>
+        <div id="challengeBody" class="challenge-body"></div>
     </div>
 
-    <!-- SCREEN 5: KOTAK NILAI (SCOREBOARD 34 SISWA) -->
+    <!-- SCREEN 5: KOTAK NILAI -->
     <div id="screenScore" class="view-screen">
         <div class="banner-title" style="padding: 5px 25px; margin-bottom: 15px;">
             <h2 class="game-title" style="font-size: 2rem;">Kotak Nilai 34 Murid 📊</h2>
         </div>
-        <div class="scoreboard-grid" id="scoreGrid">
-            <!-- Grid nilai 34 siswa di-render via script.js -->
-        </div>
+        <div class="scoreboard-grid" id="scoreGrid"></div>
     </div>
 
-    <!-- POP-UP FEEDBACK OVERLAY (VOICE OVER & STATS) -->
+    <!-- POP-UP OVERLAY -->
     <div class="popup-overlay" id="popupOverlay">
         <div class="popup-card">
             <div class="popup-title" id="popupTitle">HEBAT!</div>
             <p id="popupDesc" class="popup-desc">Jawabanmu Benar +10 Poin!</p>
-            <button class="btn-green-3d" style="font-size: 1.2rem; padding: 10px 25px;" onclick="closePopup()">
-                LANJUTKAN
-            </button>
+            <button class="btn-green-3d" style="font-size: 1.2rem; padding: 10px 25px;" onclick="closePopup()">LANJUTKAN</button>
         </div>
     </div>
 </div>
 
-<!-- JavaScript Files -->
 <script src="js/audio.js"></script>
 <script src="js/script.js"></script>
 </body>
