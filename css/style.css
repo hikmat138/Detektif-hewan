@@ -9,6 +9,7 @@
     --green-btn: linear-gradient(180deg, #9ef01a 0%, #38b000 50%, #007200 100%);
 }
 
+/* PERBAIKAN: Gunakan tanda bintang (*) bukan strip (-) */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -77,6 +78,12 @@ body {
     font-size: 1.1rem;
     cursor: pointer;
     box-shadow: 0 4px 0 #004b78;
+    transition: transform 0.1s;
+}
+
+.btn-top:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #004b78;
 }
 
 .view-screen {
@@ -137,9 +144,15 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     box-shadow: 0 8px 0 #004b23;
+    transition: transform 0.1s;
 }
 
-/* PERBAIKAN UTAMA RODA ACAK */
+.btn-green-3d:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #004b23;
+}
+
+/* RODA ACAK DETEKTIF */
 .wheel-wrapper {
     position: relative;
     width: 360px;
@@ -171,6 +184,86 @@ body {
     border-top: 30px solid #ffff3f;
     z-index: 30;
     filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.5));
+}
+
+/* KOTAK MISTERI (MYSTERY BOX) */
+.mystery-box-container {
+    cursor: pointer;
+    margin: 15px 0;
+}
+
+.mystery-box {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(180deg, #ffc107 0%, #ff8f00 100%);
+    border: 6px solid #ffe082;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 3.5rem;
+    box-shadow: 0 10px 0 #c77700, 0 15px 20px rgba(0,0,0,0.3);
+    animation: bounce 1.5s infinite alternate;
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+}
+
+.box-hint {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #5a382d;
+    background: #fff3cd;
+    padding: 6px 20px;
+    border-radius: 15px;
+    border: 2px dashed #ffc107;
+}
+
+/* ARENA TANTANGAN */
+.challenge-body {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.img-challenge {
+    width: 200px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 15px;
+    border: 4px solid var(--wood-main);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+}
+
+.opt-grid {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-opt {
+    background: linear-gradient(180deg, #ffb703 0%, #fb8500 100%);
+    color: #000;
+    border: 3px solid #fff;
+    padding: 10px 20px;
+    border-radius: 18px;
+    font-family: var(--font-btn);
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #d46900;
+    transition: transform 0.1s;
+}
+
+.btn-opt:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #d46900;
 }
 
 /* POPUP FEEDBACK */
