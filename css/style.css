@@ -9,12 +9,14 @@
     --green-btn: linear-gradient(180deg, #9ef01a 0%, #38b000 50%, #007200 100%);
 }
 
-/* PERBAIKAN: Gunakan tanda bintang (*) bukan strip (-) */
+/* PERBAIKAN: Menggunakan universal selector (*) yang benar */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 body {
@@ -26,7 +28,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 10px;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 .game-container {
@@ -43,6 +45,7 @@ body {
     overflow: hidden;
 }
 
+/* TOP BAR */
 .top-bar {
     background: linear-gradient(180deg, #9c5821 0%, #6d3910 100%);
     padding: 10px 25px;
@@ -86,6 +89,7 @@ body {
     box-shadow: 0 1px 0 #004b78;
 }
 
+/* VIEW SCREENS */
 .view-screen {
     flex: 1;
     display: none;
@@ -124,6 +128,7 @@ body {
     border-radius: 20px;
     padding: 8px;
     box-shadow: 0 8px 0 var(--wood-dark);
+    transition: transform 0.2s;
 }
 
 .animal-card-3d img {
@@ -225,11 +230,11 @@ body {
 /* ARENA TANTANGAN */
 .challenge-body {
     width: 100%;
-    max-width: 800px;
+    max-width: 850px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .img-challenge {
