@@ -12,6 +12,10 @@ students.forEach(s => scores[s] = 0);
 let currentStudent = "Nama Siswa";
 let isSpinning = false;
 
+// Variabel Khusus Tantangan 3 (Menyusun Siklus)
+let currentOrder = [];
+let selectedIndex = null;
+
 function showScreen(id) {
     document.querySelectorAll('.view-screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -21,7 +25,6 @@ function showScreen(id) {
 const canvas = document.getElementById('wheelCanvas');
 const ctx = canvas.getContext('2d');
 
-// PENGGAMBARAN RODA DENGAN CANVAS
 function drawWheel() {
     const numSlices = students.length;
     const sliceAngle = (2 * Math.PI) / numSlices;
@@ -30,7 +33,6 @@ function drawWheel() {
     students.forEach((name, i) => {
         const angle = i * sliceAngle;
         
-        // 1. Gambar Potongan Roda
         ctx.beginPath();
         ctx.fillStyle = i % 2 === 0 ? '#ffb703' : '#00b4d8';
         ctx.moveTo(200, 200);
@@ -40,7 +42,6 @@ function drawWheel() {
         ctx.strokeStyle = '#ffffff';
         ctx.stroke();
         
-        // 2. Teks Nama Murid
         ctx.save();
         ctx.translate(200, 200);
         ctx.rotate(angle + sliceAngle / 2);
@@ -72,16 +73,17 @@ function spinWheel() {
     setTimeout(() => {
         isSpinning = false;
         
+        if (typeof stopAllAudio === 'function') stopAllAudio();
+
         const actualDeg = currentRotation % 360;
         const sliceSize = 360 / students.length;
-        const selectedIndex = Math.floor((360 - (actualDeg % 360) + 270) % 360 / sliceSize) % students.length;
+        const selectedStudentIndex = Math.floor((360 - (actualDeg % 360) + 270) % 360 / sliceSize) % students.length;
         
-        currentStudent = students[selectedIndex];
+        currentStudent = students[selectedStudentIndex];
         
         document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
         document.getElementById('boxStudentTitle').innerText = `Detektif ${currentStudent}, Buka Kotak Misterimu! 🎁`;
         
-        // Suara & Narasi Terompet Siswa Terpilih
         if (typeof playVO === 'function') playVO('terpilih', currentStudent);
         
         showScreen('screenBox');
@@ -89,7 +91,6 @@ function spinWheel() {
 }
 
 function openMysteryBox() {
-    // Suara Pembukaan Kotak Misteri
     if (typeof playVO === 'function') playVO('buka_kotak');
     
     const challengeTypes = [1, 2, 3, 4, 5];
@@ -105,7 +106,6 @@ function loadChallenge(type) {
     body.innerHTML = '';
 
     if (type === 1) {
-        // Tantangan 1: Pilihan Ganda (Khusus Ovipar & Vivipar)
         title.innerText = "Tantangan 1: Pilihan Ganda Perkembangbiakan";
         body.innerHTML = `
             <img src="assets/images/kucing.jpg" class="img-challenge">
@@ -120,7 +120,6 @@ function loadChallenge(type) {
             </div>
         `;
     } else if (type === 2) {
-        // Tantangan 2: Benar / Salah
         title.innerText = "Tantangan 2: Pernyataan Benar atau Salah";
         body.innerHTML = `
             <img src="assets/images/ayam.jpg" class="img-challenge">
@@ -131,28 +130,16 @@ function loadChallenge(type) {
             </div>
         `;
     } else if (type === 3) {
-        // Tantangan 3: Urutkan Siklus Hidup Penyu
         title.innerText = "Tantangan 3: Urutkan Siklus Hidup Penyu!";
-        body.innerHTML = `
-            <p style="font-weight:800; margin-bottom:10px;">Urutan Siklus Hidup Penyu yang benar dari awal:</p>
-            <div class="opt-grid" style="gap:15px;">
-                <div class="animal-card-3d" style="width:140px; padding:5px;">
-                    <img src="assets/images/telur_penyu.jpg" style="height:90px;">
-                    <div class="label" style="font-size:1rem;">1. Telur</div>
-                </div>
-                <div class="animal-card-3d" style="width:140px; padding:5px;">
-                    <img src="assets/images/tukik.jpg" style="height:90px;">
-                    <div class="label" style="font-size:1rem;">2. Tukik</div>
-                </div>
-                <div class="animal-card-3d" style="width:140px; padding:5px;">
-                    <img src="assets/images/penyu.jpg" style="height:90px;">
-                    <div class="label" style="font-size:1rem;">3. Penyu Dewasa</div>
-                </div>
-            </div>
-            <button class="btn-green-3d" style="margin-top:15px; font-size:1.2rem;" onclick="evalAnswer(true)">PERIKSA JAWABAN</button>
-        `;
+        // Pilihan awal diacak (misal: Tukik, Telur, Dewasa)
+        currentOrder = [
+            { id: "tukik", name: "Tukik", img: "assets/images/tukik.jpg" },
+            { id: "telur", name: "Telur Penyu", img: "assets/images/telur_penyu.jpg" },
+            { id: "dewasa", name: "Penyu Dewasa", img: "assets/images/penyu.jpg" }
+        ];
+        selectedIndex = null;
+        renderSequenceChallenge();
     } else if (type === 4) {
-        // Tantangan 4: Pilih Hewan Ovipar
         title.innerText = "Tantangan 4: Pilih Hewan yang Bertelur (Ovipar)!";
         body.innerHTML = `
             <p style="font-weight:800; margin-bottom:10px;">Sentuh gambar hewan yang berkembang biak dengan bertelur:</p>
@@ -172,7 +159,6 @@ function loadChallenge(type) {
             </div>
         `;
     } else if (type === 5) {
-        // Tantangan 5: Jodohkan Induk & Anak Sapi
         title.innerText = "Tantangan 5: Jodohkan Induk & Anaknya!";
         body.innerHTML = `
             <div class="matching-grid" style="display:flex; gap:30px; justify-content:center; align-items:center;">
@@ -189,6 +175,47 @@ function loadChallenge(type) {
             <button class="btn-green-3d" style="margin-top:15px; font-size:1.2rem;" onclick="evalAnswer(true)">COCOKKAN!</button>
         `;
     }
+}
+
+// Render Ulang Tampilan Kartu Siklus Hidup
+function renderSequenceChallenge() {
+    const body = document.getElementById('challengeBody');
+    body.innerHTML = `
+        <p style="font-weight:800; margin-bottom:5px;">Sentuh dua kartu di layar PID untuk menukar urutannya hingga benar!</p>
+        <div class="opt-grid" style="gap:15px; margin-top:10px;">
+            ${currentOrder.map((item, index) => `
+                <div class="animal-card-3d" 
+                     style="width:140px; padding:5px; cursor:pointer; border:${selectedIndex === index ? '5px solid #ff0054' : '5px solid #ffe066'}; transform:${selectedIndex === index ? 'scale(1.05)' : 'scale(1)'};" 
+                     onclick="selectSequenceCard(${index})">
+                    <img src="${item.img}" style="height:90px; width:100%; object-fit:cover; border-radius:10px;">
+                    <div class="label" style="font-size:0.95rem;">Urutan ${index + 1}:<br><b>${item.name}</b></div>
+                </div>
+            `).join('')}
+        </div>
+        <button class="btn-green-3d" style="margin-top:15px; font-size:1.2rem;" onclick="checkSequenceAnswer()">PERIKSA JAWABAN</button>
+    `;
+}
+
+// Logika Menukar Kartu
+function selectSequenceCard(index) {
+    if (selectedIndex === null) {
+        selectedIndex = index;
+    } else {
+        // Tukar posisi dua kartu
+        let temp = currentOrder[selectedIndex];
+        currentOrder[selectedIndex] = currentOrder[index];
+        currentOrder[index] = temp;
+        selectedIndex = null;
+    }
+    renderSequenceChallenge();
+}
+
+// Evaluasi Urutan
+function checkSequenceAnswer() {
+    const isCorrect = currentOrder[0].id === 'telur' && 
+                      currentOrder[1].id === 'tukik' && 
+                      currentOrder[2].id === 'dewasa';
+    evalAnswer(isCorrect);
 }
 
 function evalAnswer(isCorrect) {
@@ -235,7 +262,6 @@ function renderScoreboard() {
     });
 }
 
-// Inisialisasi awal
 window.onload = function() {
     drawWheel();
     document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
