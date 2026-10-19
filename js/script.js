@@ -69,10 +69,10 @@ let currentRotation = 0;
 function spinWheel() {
     if (isSpinning) return;
     
-    // Jika semua murid sudah selesai giliran, reset ulang daftar murid
+    // Jika semua murid sudah selesai giliran, reset ulang daftar murid secara otomatis
     if (remainingStudents.length === 0) {
-        remainingStudents = [...allStudentsList];
-        drawWheel();
+        resetWheelFull();
+        return;
     }
 
     isSpinning = true;
@@ -92,11 +92,9 @@ function spinWheel() {
         const sliceSize = 360 / remainingStudents.length;
         const selectedIndex = Math.floor((360 - (actualDeg % 360) + 270) % 360 / sliceSize) % remainingStudents.length;
         
-        // Ambil murid terpilih & hapus dari daftar giliran
         currentStudent = remainingStudents[selectedIndex];
         remainingStudents.splice(selectedIndex, 1);
         
-        // Render ulang roda tanpa murid yang baru terpilih
         drawWheel();
         
         document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
@@ -108,22 +106,24 @@ function spinWheel() {
     }, 4000);
 }
 
-function openMysteryBox() {
-    if (typeof playVO === 'function') playVO('buka_kotak');
-    
-    const challengeTypes = [1, 2, 3, 4, 5];
-    const randomType = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
-    
-    showScreen('screenChallenge');
-    loadChallenge(randomType);
+// Fungsi untuk Reset Roda Manual / Otomatis Penuh
+function resetWheelFull() {
+    remainingStudents = [...allStudentsList];
+    currentRotation = 0;
+    canvas.style.transition = "none";
+    canvas.style.transform = `rotate(0deg)`;
+    drawWheel();
+    currentStudent = "Nama Siswa";
+    document.getElementById('activeStudentLabel').innerText = `Detektif: Siap Berputar!`;
+    // Isi ulang antrean soal agar bersih kembali
+    initQueues();
 }
 
 // ==========================================
-// BANK DATA & GENERATOR TANTANGAN DINAMIS
+// MASTER BANK DATA & ANTREAN SOAL (UNIK ANTAR SISWA)
 // ==========================================
 
-// Databank untuk Tantangan 1, 2, & 4 (Vivipar, Ovipar, Ovovivipar)
-const quizBank = [
+const quizBankMaster = [
     { name: "Kucing", img: "assets/images/kucing.jpg", category: "VIVIPAR" },
     { name: "Ayam", img: "assets/images/ayam.jpg", category: "OVIPAR" },
     { name: "Penyu", img: "assets/images/penyu.jpg", category: "OVIPAR" },
@@ -141,8 +141,7 @@ const quizBank = [
     { name: "Hiu", img: "assets/images/hiu.jpg", category: "OVOVIVIPAR" }
 ];
 
-// Databank Siklus Hidup Tantangan 3
-const cycleBank = [
+const cycleBankMaster = [
     {
         title: "Penyu",
         items: [
@@ -182,11 +181,42 @@ const cycleBank = [
             { id: "tukik", name: "Kelinci Muda", img: "assets/images/kelinci_muda.jpg" },
             { id: "dewasa", name: "Kelinci Dewasa", img: "assets/images/kelinci_dewasa.jpg" }
         ]
+    },
+    {
+        title: "Ikan",
+        items: [
+            { id: "telur", name: "Telur Ikan", img: "assets/images/telur_ikan.jpg" },
+            { id: "tukik", name: "Anak Ikan", img: "assets/images/anak_ikan.jpg" },
+            { id: "dewasa", name: "Ikan Dewasa", img: "assets/images/ikan_mas.jpg" }
+        ]
+    },
+    {
+        title: "Kambing",
+        items: [
+            { id: "telur", name: "Anak Kambing", img: "assets/images/anak_kambing.jpg" },
+            { id: "tukik", name: "Kambing Muda", img: "assets/images/kambing_muda.jpg" },
+            { id: "dewasa", name: "Kambing Dewasa", img: "assets/images/kambing_dewasa.jpg" }
+        ]
+    },
+    {
+        title: "Sapi",
+        items: [
+            { id: "telur", name: "Pedet (Anak Sapi)", img: "assets/images/pedet_sapi.jpg" },
+            { id: "tukik", name: "Sapi Muda", img: "assets/images/sapi_muda.jpg" },
+            { id: "dewasa", name: "Sapi Dewasa", img: "assets/images/sapi_dewasa.jpg" }
+        ]
+    },
+    {
+        title: "Bebek",
+        items: [
+            { id: "telur", name: "Telur Bebek", img: "assets/images/telur_bebek.jpg" },
+            { id: "tukik", name: "Anak Bebek", img: "assets/images/anak_bebek.jpg" },
+            { id: "dewasa", name: "Bebek Dewasa", img: "assets/images/bebek.jpg" }
+        ]
     }
 ];
 
-// Databank 5 Misi Tantangan 5 (Tepat 2 Pasang Hewan per Misi)
-const matchingMissions = [
+const matchingMissionsMaster = [
     {
         missionName: "Misi 1: Hewan Ternak Besar",
         parents: [
@@ -244,14 +274,52 @@ const matchingMissions = [
     }
 ];
 
+// Variabel Antrean
+let quizQueue1 = [];
+let quizQueue2 = [];
+let quizQueue4 = [];
+let cycleQueue = [];
+let matchingQueue = [];
+
+function initQueues() {
+    quizQueue1 = [...quizBankMaster].sort(() => Math.random() - 0.5);
+    quizQueue2 = [...quizBankMaster].sort(() => Math.random() - 0.5);
+    quizQueue4 = [...quizBankMaster].sort(() => Math.random() - 0.5);
+    cycleQueue = [...cycleBankMaster].sort(() => Math.random() - 0.5);
+    matchingQueue = [...matchingMissionsMaster].sort(() => Math.random() - 0.5);
+}
+
+// Inisialisasi awal saat dimuat
+initQueues();
+
+// LOGIKA PEMILIHAN TANTANGAN (1, 2, 4 diperbanyak, 3 & 5 sesuai kuota 14 siswa)
+function openMysteryBox() {
+    if (typeof playVO === 'function') playVO('buka_kotak');
+    
+    let availableChallenges = [1, 2, 4]; 
+
+    if (cycleQueue.length > 0) {
+        availableChallenges.push(3);
+    }
+    if (matchingQueue.length > 0) {
+        availableChallenges.push(5);
+    }
+
+    const randomType = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
+    
+    showScreen('screenChallenge');
+    loadChallenge(randomType);
+}
+
 function loadChallenge(type) {
     const body = document.getElementById('challengeBody');
     const title = document.getElementById('challengeTitle');
     body.innerHTML = '';
 
     if (type === 1) {
-        // TANTANGAN 1: Pilihan Ganda 3 Opsi
-        const item = quizBank[Math.floor(Math.random() * quizBank.length)];
+        if (quizQueue1.length === 0) quizQueue1 = [...quizBankMaster].sort(() => Math.random() - 0.5);
+        const item = quizQueue1.pop();
+
         title.innerText = "Tantangan 1: Pilihan Ganda Perkembangbiakan";
         body.innerHTML = `
             <img src="${item.img}" class="img-challenge">
@@ -272,8 +340,8 @@ function loadChallenge(type) {
             </div>
         `;
     } else if (type === 2) {
-        // TANTANGAN 2: Pernyataan Benar atau Salah
-        const item = quizBank[Math.floor(Math.random() * quizBank.length)];
+        if (quizQueue2.length === 0) quizQueue2 = [...quizBankMaster].sort(() => Math.random() - 0.5);
+        const item = quizQueue2.pop();
         const isTrueStatement = Math.random() > 0.5;
         
         let statementCategory = item.category;
@@ -299,18 +367,21 @@ function loadChallenge(type) {
             </div>
         `;
     } else if (type === 3) {
-        // TANTANGAN 3: Urutkan Siklus Hidup
-        const cycle = cycleBank[Math.floor(Math.random() * cycleBank.length)];
-        title.innerText = `Tantangan 3: Urutkan Siklus Hidup ${cycle.title}!`;
+        if (cycleQueue.length === 0) {
+            cycleQueue = [...cycleBankMaster].sort(() => Math.random() - 0.5);
+        }
+        currentCycleMission = cycleQueue.pop();
         
-        availableOptions = [...cycle.items].sort(() => Math.random() - 0.5);
+        title.innerText = `Tantangan 3: Urutkan Siklus Hidup ${currentCycleMission.title}!`;
+        
+        availableOptions = [...currentCycleMission.items].sort(() => Math.random() - 0.5);
         targetSlots = [null, null, null];
         selectedOptionIndex = null;
         renderDropzoneChallenge();
     } else if (type === 4) {
-        // TANTANGAN 4: Pilih Hewan Kategori Spesifik
-        const categories = ["OVIPAR", "VIVIPAR", "OVOVIVIPAR"];
-        const targetCategory = categories[Math.floor(Math.random() * categories.length)];
+        if (quizQueue4.length === 0) quizQueue4 = [...quizBankMaster].sort(() => Math.random() - 0.5);
+        const itemTest = quizQueue4.pop();
+        const targetCategory = itemTest.category;
         
         let labelTarget = "";
         if (targetCategory === "OVIPAR") labelTarget = "Bertelur (Ovipar)";
@@ -319,10 +390,10 @@ function loadChallenge(type) {
 
         title.innerText = `Tantangan 4: Pilih Hewan yang ${labelTarget}!`;
         
-        const correctAnimals = quizBank.filter(a => a.category === targetCategory);
-        const wrongAnimals = quizBank.filter(a => a.category !== targetCategory);
+        const correctAnimals = quizBankMaster.filter(a => a.category === targetCategory);
+        const wrongAnimals = quizBankMaster.filter(a => a.category !== targetCategory);
         
-        const correctChoice = correctAnimals[Math.floor(Math.random() * correctAnimals.length)];
+        const correctChoice = itemTest.category === targetCategory ? itemTest : correctAnimals[Math.floor(Math.random() * correctAnimals.length)];
         const wrongChoice1 = wrongAnimals[Math.floor(Math.random() * wrongAnimals.length)];
         let wrongChoice2 = wrongAnimals[Math.floor(Math.random() * wrongAnimals.length)];
         while (wrongChoice2.name === wrongChoice1.name) {
@@ -347,12 +418,15 @@ function loadChallenge(type) {
             </div>
         `;
     } else if (type === 5) {
-        // TANTANGAN 5: Menjodohkan Hewan (Acak Misi 1 - 5)
-        const selectedMission = matchingMissions[Math.floor(Math.random() * matchingMissions.length)];
-        title.innerText = `Tantangan 5: ${selectedMission.missionName}`;
+        if (matchingQueue.length === 0) {
+            matchingQueue = [...matchingMissionsMaster].sort(() => Math.random() - 0.5);
+        }
+        currentMatchingMission = matchingQueue.pop();
         
-        matchingParents = [...selectedMission.parents];
-        matchingChildren = [...selectedMission.children].sort(() => Math.random() - 0.5);
+        title.innerText = `Tantangan 5: ${currentMatchingMission.missionName}`;
+        
+        matchingParents = [...currentMatchingMission.parents];
+        matchingChildren = [...currentMatchingMission.children].sort(() => Math.random() - 0.5);
 
         selectedParent = null;
         selectedChild = null;
@@ -364,6 +438,7 @@ function loadChallenge(type) {
 // ==========================================
 // LOGIKA TANTANGAN 3 (DRAG AND DROP DROPZONE)
 // ==========================================
+let currentCycleMission = null;
 let availableOptions = [];
 let targetSlots = [null, null, null];
 let selectedOptionIndex = null;
@@ -375,7 +450,6 @@ function renderDropzoneChallenge() {
             Geser (Drag) atau sentuh gambar di bawah ke Kotak Target untuk menyusun urutannya!
         </p>
         
-        <!-- TARGET DROPZONE (KOTAK KOSONG) -->
         <div style="display:flex; gap:15px; justify-content:center; margin:10px 0;">
             ${targetSlots.map((slot, index) => `
                 <div onclick="placeInSlot(${index})" 
@@ -393,7 +467,6 @@ function renderDropzoneChallenge() {
             `).join('')}
         </div>
 
-        <!-- PILIHAN GAMBAR -->
         <div style="display:flex; gap:15px; justify-content:center; margin-top:5px;">
             ${availableOptions.map((item, index) => `
                 <div onclick="selectOption(${index})" 
@@ -412,9 +485,18 @@ function renderDropzoneChallenge() {
 
         <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
             <button class="btn-green-3d" style="font-size:1.1rem; padding:8px 25px;" onclick="checkDropzoneAnswer()">PERIKSA JAWABAN</button>
-            <button class="btn-top" style="background:#d90429; font-size:0.95rem; padding:8px 15px;" onclick="loadChallenge(3)">🔄 Reset</button>
+            <button class="btn-top" style="background:#d90429; font-size:0.95rem; padding:8px 15px;" onclick="resetCurrentDropzone()">🔄 Reset</button>
         </div>
     `;
+}
+
+function resetCurrentDropzone() {
+    if (currentCycleMission) {
+        availableOptions = [...currentCycleMission.items].sort(() => Math.random() - 0.5);
+        targetSlots = [null, null, null];
+        selectedOptionIndex = null;
+        renderDropzoneChallenge();
+    }
 }
 
 function selectOption(index) {
@@ -476,8 +558,9 @@ function checkDropzoneAnswer() {
 }
 
 // ==========================================
-// LOGIKA TANTANGAN 5 (MATCHING GAME - TEPAT 2 HEWAN)
+// LOGIKA TANTANGAN 5 (MATCHING GAME)
 // ==========================================
+let currentMatchingMission = null;
 let matchingParents = [];
 let matchingChildren = [];
 let selectedParent = null;
@@ -492,7 +575,6 @@ function renderMatchingChallenge() {
         </p>
 
         <div style="display:flex; gap:50px; justify-content:center; align-items:center; margin:10px 0;">
-            <!-- KOLOM INDUK (KIRI - HANYA 2 PASANG) -->
             <div style="display:flex; flex-direction:column; gap:15px;">
                 ${matchingParents.map((parent) => {
                     const isSelected = selectedParent === parent.id;
@@ -512,7 +594,6 @@ function renderMatchingChallenge() {
 
             <div style="font-size:2.5rem; font-weight:900; color:#5a382d;">➡️</div>
 
-            <!-- KOLOM ANAK (KANAN - HANYA 2 PASANG DIACAK) -->
             <div style="display:flex; flex-direction:column; gap:15px;">
                 ${matchingChildren.map((child) => {
                     const isSelected = selectedChild === child.id;
@@ -533,9 +614,20 @@ function renderMatchingChallenge() {
 
         <div style="margin-top:15px; display:flex; gap:15px; justify-content:center;">
             <button class="btn-green-3d" style="font-size:1.2rem; padding:10px 30px;" onclick="checkMatchingAnswer()">COCOKKAN!</button>
-            <button class="btn-top" style="background:#d90429; font-size:1rem; padding:10px 20px;" onclick="loadChallenge(5)">🔄 Reset</button>
+            <button class="btn-top" style="background:#d90429; font-size:1rem; padding:10px 20px;" onclick="resetCurrentMatching()">🔄 Reset</button>
         </div>
     `;
+}
+
+function resetCurrentMatching() {
+    if (currentMatchingMission) {
+        matchingParents = [...currentMatchingMission.parents];
+        matchingChildren = [...currentMatchingMission.children].sort(() => Math.random() - 0.5);
+        selectedParent = null;
+        selectedChild = null;
+        userMatches = {};
+        renderMatchingChallenge();
+    }
 }
 
 function selectParent(parentId) {
@@ -626,4 +718,13 @@ function renderScoreboard() {
 window.onload = function() {
     drawWheel();
     document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
+    
+    // Tambahkan Tombol Reset Roda Manual di Tampilan Utama Roda jika diinginkan guru
+    const wheelScreen = document.getElementById('screenWheel');
+    if (wheelScreen && !document.getElementById('btnManualReset')) {
+        const resetBtn = document.createElement('div');
+        resetBtn.style.cssText = "text-align:center; margin-top:10px;";
+        resetBtn.innerHTML = `<button id="btnManualReset" onclick="resetWheelFull()" style="background:#d90429; color:white; border:none; padding:8px 20px; font-weight:800; border-radius:12px; cursor:pointer; font-size:0.95rem;">🔄 Reset Ulang Roda & Soal</button>`;
+        wheelScreen.appendChild(resetBtn);
+    }
 };
