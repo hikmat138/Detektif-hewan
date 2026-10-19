@@ -17,7 +17,7 @@ let currentStudent = "Nama Siswa";
 let isSpinning = false;
 
 // ==========================================
-// UTITAS NAVIGASI SKRIN
+// UTILITAS NAVIGASI SCREEN
 // ==========================================
 function showScreen(id) {
     document.querySelectorAll('.view-screen').forEach(s => s.classList.remove('active'));
@@ -69,7 +69,7 @@ let currentRotation = 0;
 function spinWheel() {
     if (isSpinning) return;
     
-    // Jika semua murid sudah selesai, reset daftar murid
+    // Jika semua murid sudah selesai giliran, reset ulang daftar murid
     if (remainingStudents.length === 0) {
         remainingStudents = [...allStudentsList];
         drawWheel();
@@ -92,11 +92,11 @@ function spinWheel() {
         const sliceSize = 360 / remainingStudents.length;
         const selectedIndex = Math.floor((360 - (actualDeg % 360) + 270) % 360 / sliceSize) % remainingStudents.length;
         
-        // Ambil murid terpilih & HAPUS dari daftar giliran
+        // Ambil murid terpilih & hapus dari daftar giliran
         currentStudent = remainingStudents[selectedIndex];
         remainingStudents.splice(selectedIndex, 1);
         
-        // Gambar ulang roda tanpa nama murid yang baru terpilih
+        // Render ulang roda tanpa murid yang sudah mendapat giliran
         drawWheel();
         
         document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
@@ -122,20 +122,23 @@ function openMysteryBox() {
 // BANK DATA & GENERATOR TANTANGAN DINAMIS
 // ==========================================
 
-// Databank untuk Tantangan 1 & 2 (Pilihan Ganda & Benar/Salah)
+// Databank untuk Tantangan 1, 2, & 4 (Termasuk Ovovivipar)
 const quizBank = [
-    { name: "Kucing", img: "assets/images/kucing.jpg", type: "VIVIPAR", isOvipar: false },
-    { name: "Ayam", img: "assets/images/ayam.jpg", type: "OVIPAR", isOvipar: true },
-    { name: "Penyu", img: "assets/images/penyu.jpg", type: "OVIPAR", isOvipar: true },
-    { name: "Sapi", img: "assets/images/sapi.jpg", type: "VIVIPAR", isOvipar: false },
-    { name: "Bebek", img: "assets/images/bebek.jpg", type: "OVIPAR", isOvipar: true },
-    { name: "Kambing", img: "assets/images/kambing.jpg", type: "VIVIPAR", isOvipar: false },
-    { name: "Elang", img: "assets/images/elang.jpg", type: "OVIPAR", isOvipar: true },
-    { name: "Kuda", img: "assets/images/kuda.jpg", type: "VIVIPAR", isOvipar: false },
-    { name: "Kelinci", img: "assets/images/kelinci.jpg", type: "VIVIPAR", isOvipar: false },
-    { name: "Ikan Mas", img: "assets/images/ikan_mas.jpg", type: "OVIPAR", isOvipar: true },
-    { name: "Gajah", img: "assets/images/gajah.jpg", type: "VIVIPAR", isOvipar: false },
-    { name: "Harimau", img: "assets/images/harimau.jpg", type: "VIVIPAR", isOvipar: false }
+    { name: "Kucing", img: "assets/images/kucing.jpg", category: "VIVIPAR" },
+    { name: "Ayam", img: "assets/images/ayam.jpg", category: "OVIPAR" },
+    { name: "Penyu", img: "assets/images/penyu.jpg", category: "OVIPAR" },
+    { name: "Sapi", img: "assets/images/sapi.jpg", category: "VIVIPAR" },
+    { name: "Bebek", img: "assets/images/bebek.jpg", category: "OVIPAR" },
+    { name: "Kambing", img: "assets/images/kambing.jpg", category: "VIVIPAR" },
+    { name: "Elang", img: "assets/images/elang.jpg", category: "OVIPAR" },
+    { name: "Kuda", img: "assets/images/kuda.jpg", category: "VIVIPAR" },
+    { name: "Kelinci", img: "assets/images/kelinci.jpg", category: "VIVIPAR" },
+    { name: "Ikan Mas", img: "assets/images/ikan_mas.jpg", category: "OVIPAR" },
+    { name: "Gajah", img: "assets/images/gajah.jpg", category: "VIVIPAR" },
+    { name: "Harimau", img: "assets/images/harimau.jpg", category: "VIVIPAR" },
+    { name: "Ular", img: "assets/images/ular.jpg", category: "OVOVIVIPAR" },
+    { name: "Pari", img: "assets/images/pari.jpg", category: "OVOVIVIPAR" },
+    { name: "Hiu", img: "assets/images/hiu.jpg", category: "OVOVIVIPAR" }
 ];
 
 // Databank Siklus Hidup Tantangan 3
@@ -182,48 +185,111 @@ const cycleBank = [
     }
 ];
 
+// Databank 3 Misi Tantangan 5 (Matching)
+const matchingMissions = [
+    {
+        missionName: "Misi 1: Hewan Ternak",
+        parents: [
+            { id: "sapi", name: "Induk Sapi", img: "assets/images/sapi_dewasa.jpg" },
+            { id: "kambing", name: "Induk Kambing", img: "assets/images/kambing_dewasa.jpg" },
+            { id: "ayam", name: "Induk Ayam", img: "assets/images/ayam.jpg" },
+            { id: "bebek", name: "Induk Bebek", img: "assets/images/bebek.jpg" }
+        ],
+        children: [
+            { id: "kambing", name: "Anak Kambing", img: "assets/images/anak_kambing.jpg" },
+            { id: "bebek", name: "Anak Bebek", img: "assets/images/anak_bebek.jpg" },
+            { id: "sapi", name: "Anak Sapi (Pedet)", img: "assets/images/pedet_sapi.jpg" },
+            { id: "ayam", name: "Anak Ayam", img: "assets/images/anak_ayam.jpg" }
+        ]
+    },
+    {
+        missionName: "Misi 2: Hewan Peliharaan & Unggas",
+        parents: [
+            { id: "kuda", name: "Induk Kuda", img: "assets/images/kuda_dewasa.jpg" },
+            { id: "kelinci", name: "Induk Kelinci", img: "assets/images/kelinci_dewasa.jpg" },
+            { id: "kucing", name: "Induk Kucing", img: "assets/images/kucing_dewasa.jpg" },
+            { id: "elang", name: "Induk Elang", img: "assets/images/elang.jpg" }
+        ],
+        children: [
+            { id: "kelinci", name: "Bayi Kelinci", img: "assets/images/bayi_kelinci.jpg" },
+            { id: "elang", name: "Anak Elang", img: "assets/images/anak_elang.jpg" },
+            { id: "kuda", name: "Anak Kuda", img: "assets/images/anak_kuda.jpg" },
+            { id: "kucing", name: "Anak Kucing", img: "assets/images/anak_kucing.jpg" }
+        ]
+    },
+    {
+        missionName: "Misi 3: Satwa Liar & Air",
+        parents: [
+            { id: "ikan", name: "Induk Ikan", img: "assets/images/ikan_mas.jpg" },
+            { id: "penyu", name: "Induk Penyu", img: "assets/images/penyu.jpg" },
+            { id: "harimau", name: "Induk Harimau", img: "assets/images/harimau.jpg" },
+            { id: "gajah", name: "Induk Gajah", img: "assets/images/gajah.jpg" }
+        ],
+        children: [
+            { id: "penyu", name: "Tukik Penyu", img: "assets/images/tukik.jpg" },
+            { id: "ikan", name: "Anak Ikan", img: "assets/images/anak_ikan.jpg" },
+            { id: "gajah", name: "Anak Gajah", img: "assets/images/gajah.jpg" },
+            { id: "harimau", name: "Anak Harimau", img: "assets/images/harimau.jpg" }
+        ]
+    }
+];
+
 function loadChallenge(type) {
     const body = document.getElementById('challengeBody');
     const title = document.getElementById('challengeTitle');
     body.innerHTML = '';
 
     if (type === 1) {
-        // TANTANGAN 1: Pilihan Ganda (Random Animal)
+        // TANTANGAN 1: Pilihan Ganda 3 Opsi (Vivipar, Ovipar, Ovovivipar)
         const item = quizBank[Math.floor(Math.random() * quizBank.length)];
         title.innerText = "Tantangan 1: Pilihan Ganda Perkembangbiakan";
         body.innerHTML = `
             <img src="${item.img}" class="img-challenge">
             <p style="font-weight:800; font-size:1.3rem; margin:10px 0;">Bagaimana cara ${item.name} berkembang biak?</p>
-            <div class="opt-grid" style="gap:20px;">
-                <button class="btn-opt" style="font-size:1.3rem; padding:12px 28px; background:linear-gradient(180deg, #70e000 0%, #38b000 100%); color:white;" 
-                        onclick="evalAnswer(${item.type === 'VIVIPAR'})">
+            <div class="opt-grid" style="gap:15px;">
+                <button class="btn-opt" style="font-size:1.1rem; padding:12px 22px; background:linear-gradient(180deg, #70e000 0%, #38b000 100%); color:white;" 
+                        onclick="evalAnswer('${item.category}' === 'VIVIPAR')">
                     VIVIPAR (Melahirkan)
                 </button>
-                <button class="btn-opt" style="font-size:1.3rem; padding:12px 28px; background:linear-gradient(180deg, #ffb703 0%, #fb8500 100%); color:white;" 
-                        onclick="evalAnswer(${item.type === 'OVIPAR'})">
+                <button class="btn-opt" style="font-size:1.1rem; padding:12px 22px; background:linear-gradient(180deg, #ffb703 0%, #fb8500 100%); color:white;" 
+                        onclick="evalAnswer('${item.category}' === 'OVIPAR')">
                     OVIPAR (Bertelur)
+                </button>
+                <button class="btn-opt" style="font-size:1.1rem; padding:12px 22px; background:linear-gradient(180deg, #9d4edd 0%, #5a189a 100%); color:white;" 
+                        onclick="evalAnswer('${item.category}' === 'OVOVIVIPAR')">
+                    OVOVIVIPAR (Bertelur & Melahirkan)
                 </button>
             </div>
         `;
     } else if (type === 2) {
-        // TANTANGAN 2: Pernyataan Benar/Salah (Random Statement)
+        // TANTANGAN 2: Benar / Salah (Aman Tanpa Bentrok Petik)
         const item = quizBank[Math.floor(Math.random() * quizBank.length)];
         const isTrueStatement = Math.random() > 0.5;
-        const statementType = isTrueStatement ? item.type : (item.type === 'OVIPAR' ? 'VIVIPAR (Melahirkan)' : 'OVIPAR (Bertelur)');
         
+        let statementCategory = item.category;
+        if (!isTrueStatement) {
+            const wrongCategories = ["OVIPAR", "VIVIPAR", "OVOVIVIPAR"].filter(c => c !== item.category);
+            statementCategory = wrongCategories[Math.floor(Math.random() * wrongCategories.length)];
+        }
+        
+        let labelCategory = "";
+        if (statementCategory === "OVIPAR") labelCategory = "OVIPAR (Bertelur)";
+        else if (statementCategory === "VIVIPAR") labelCategory = "VIVIPAR (Melahirkan)";
+        else labelCategory = "OVOVIVIPAR (Bertelur & Melahirkan)";
+
         title.innerText = "Tantangan 2: Pernyataan Benar atau Salah";
         body.innerHTML = `
             <img src="${item.img}" class="img-challenge">
             <p style="font-weight:800; font-size:1.2rem; margin:10px 0;">
-                Pernyataan: "${item.name} berkembang biak dengan cara ${statementType}."
+                Pernyataan: "${item.name} berkembang biak dengan cara ${labelCategory}."
             </p>
-            <div class="opt-grid" style="gap:20px;">
-                <button class="btn-opt" style="font-size:1.4rem; padding:12px 35px; background:#38b000; color:white;" onclick="evalAnswer(${isTrueStatement})">BENAR</button>
-                <button class="btn-opt" style="font-size:1.4rem; padding:12px 35px; background:#d90429; color:white;" onclick="evalAnswer(!isTrueStatement)">SALAH</button>
+            <div class="opt-grid" style="gap:25px;">
+                <button class="btn-opt" style="font-size:1.4rem; padding:12px 40px; background:#38b000; color:white;" onclick="evalAnswer(${isTrueStatement})">BENAR</button>
+                <button class="btn-opt" style="font-size:1.4rem; padding:12px 40px; background:#d90429; color:white;" onclick="evalAnswer(${!isTrueStatement})">SALAH</button>
             </div>
         `;
     } else if (type === 3) {
-        // TANTANGAN 3: Urutkan Siklus Hidup (Tap-to-Place Dropzone)
+        // TANTANGAN 3: Urutkan Siklus Hidup (Drag and Drop / Tap Dropzone)
         const cycle = cycleBank[Math.floor(Math.random() * cycleBank.length)];
         title.innerText = `Tantangan 3: Urutkan Siklus Hidup ${cycle.title}!`;
         
@@ -232,12 +298,19 @@ function loadChallenge(type) {
         selectedOptionIndex = null;
         renderDropzoneChallenge();
     } else if (type === 4) {
-        // TANTANGAN 4: Kategori Ovipar / Vivipar
-        const isTargetOvipar = Math.random() > 0.5;
-        title.innerText = isTargetOvipar ? "Tantangan 4: Pilih Hewan yang Bertelur (Ovipar)!" : "Tantangan 4: Pilih Hewan yang Melahirkan (Vivipar)!";
+        // TANTANGAN 4: Pilih Hewan Sesuai Kategori (Ovipar, Vivipar, Ovovivipar)
+        const categories = ["OVIPAR", "VIVIPAR", "OVOVIVIPAR"];
+        const targetCategory = categories[Math.floor(Math.random() * categories.length)];
         
-        const correctAnimals = quizBank.filter(a => a.isOvipar === isTargetOvipar);
-        const wrongAnimals = quizBank.filter(a => a.isOvipar !== isTargetOvipar);
+        let labelTarget = "";
+        if (targetCategory === "OVIPAR") labelTarget = "Bertelur (Ovipar)";
+        else if (targetCategory === "VIVIPAR") labelTarget = "Melahirkan (Vivipar)";
+        else labelTarget = "Bertelur & Melahirkan (Ovovivipar)";
+
+        title.innerText = `Tantangan 4: Pilih Hewan yang ${labelTarget}!`;
+        
+        const correctAnimals = quizBank.filter(a => a.category === targetCategory);
+        const wrongAnimals = quizBank.filter(a => a.category !== targetCategory);
         
         const correctChoice = correctAnimals[Math.floor(Math.random() * correctAnimals.length)];
         const wrongChoice1 = wrongAnimals[Math.floor(Math.random() * wrongAnimals.length)];
@@ -264,22 +337,12 @@ function loadChallenge(type) {
             </div>
         `;
     } else if (type === 5) {
-        // TANTANGAN 5: Menjodohkan 4 Pasangan Hewan
-        title.innerText = "Tantangan 5: Jodohkan Induk & Anaknya!";
+        // TANTANGAN 5: Menjodohkan Hewan (Random Misi 1 - 3)
+        const selectedMission = matchingMissions[Math.floor(Math.random() * matchingMissions.length)];
+        title.innerText = `Tantangan 5: ${selectedMission.missionName}`;
         
-        matchingParents = [
-            { id: "sapi", name: "Induk Sapi", img: "assets/images/sapi_dewasa.jpg" },
-            { id: "kambing", name: "Induk Kambing", img: "assets/images/kambing_dewasa.jpg" },
-            { id: "ayam", name: "Induk Ayam", img: "assets/images/ayam.jpg" },
-            { id: "bebek", name: "Induk Bebek", img: "assets/images/bebek.jpg" }
-        ];
-
-        matchingChildren = [
-            { id: "kambing", name: "Anak Kambing", img: "assets/images/anak_kambing.jpg" },
-            { id: "bebek", name: "Anak Bebek", img: "assets/images/anak_bebek.jpg" },
-            { id: "sapi", name: "Anak Sapi (Pedet)", img: "assets/images/pedet_sapi.jpg" },
-            { id: "ayam", name: "Anak Ayam", img: "assets/images/anak_ayam.jpg" }
-        ].sort(() => Math.random() - 0.5);
+        matchingParents = [...selectedMission.parents];
+        matchingChildren = [...selectedMission.children].sort(() => Math.random() - 0.5);
 
         selectedParent = null;
         selectedChild = null;
@@ -289,7 +352,7 @@ function loadChallenge(type) {
 }
 
 // ==========================================
-// LOGIKA TANTANGAN 3 (DROPZONE)
+// LOGIKA TANTANGAN 3 (DRAG AND DROP DROPZONE)
 // ==========================================
 let availableOptions = [];
 let targetSlots = [null, null, null];
@@ -299,20 +362,22 @@ function renderDropzoneChallenge() {
     const body = document.getElementById('challengeBody');
     body.innerHTML = `
         <p style="font-weight:800; font-size:1rem; margin-bottom:5px;">
-            Pilih gambar di bawah, lalu sentuh Kotak Target untuk menyusun urutannya!
+            Geser (Drag) atau sentuh gambar di bawah ke Kotak Target untuk menyusun urutannya!
         </p>
         
-        <!-- TARGET DROPZONE -->
+        <!-- TARGET DROPZONE (KOTAK KOSONG) -->
         <div style="display:flex; gap:15px; justify-content:center; margin:10px 0;">
             ${targetSlots.map((slot, index) => `
                 <div onclick="placeInSlot(${index})" 
-                     style="width:130px; height:140px; border:3px dashed #8a4819; border-radius:18px; background:rgba(255,255,255,0.7); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; padding:5px;">
+                     ondragover="allowDrop(event)" 
+                     ondrop="handleDrop(event, ${index})"
+                     style="width:130px; height:140px; border:3px dashed #8a4819; border-radius:18px; background:rgba(255,255,255,0.75); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; padding:5px;">
                     <span style="font-size:0.85rem; font-weight:800; color:#57290b; margin-bottom:2px;">Urutan ${index + 1}</span>${slot ? `
                         <img src="${slot.img}" style="width:100%; height:85px; object-fit:cover; border-radius:10px;">
                         <span style="font-size:0.85rem; font-weight:800; margin-top:3px;">${slot.name}</span>
                     ` : `
                         <span style="font-size:2rem; color:#b06b32;">➕</span>
-                        <span style="font-size:0.75rem; color:#888;">Ketuk di sini</span>
+                        <span style="font-size:0.75rem; color:#888;">Taruh di sini</span>
                     `}
                 </div>
             `).join('')}
@@ -322,9 +387,11 @@ function renderDropzoneChallenge() {
         <div style="display:flex; gap:15px; justify-content:center; margin-top:5px;">
             ${availableOptions.map((item, index) => `
                 <div onclick="selectOption(${index})" 
+                     draggable="${item !== null}" 
+                     ondragstart="handleDragStart(event, ${index})"
                      style="width:120px; padding:6px; background:#ffe066; border:${selectedOptionIndex === index ? '4px solid #ff0054' : '3px solid #8a4819'}; border-radius:15px; cursor:pointer; opacity:${item === null ? '0.3' : '1'}; transform:${selectedOptionIndex === index ? 'scale(1.08)' : 'scale(1)'}; transition:all 0.2s;">
                     ${item ? `
-                        <img src="${item.img}" style="width:100%; height:75px; object-fit:cover; border-radius:8px;">
+                        <img src="${item.img}" style="width:100%; height:75px; object-fit:cover; border-radius:8px; pointer-events:none;">
                         <span style="font-size:0.8rem; font-weight:800; display:block; margin-top:2px;">${item.name}</span>
                     ` : `
                         <span style="font-size:0.8rem; color:#777;">Dipilih</span>
@@ -368,6 +435,24 @@ function placeInSlot(slotIndex) {
     }
 }
 
+// Handler Drag & Drop Asli HTML5
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function handleDragStart(ev, index) {
+    ev.dataTransfer.setData("optionIndex", index);
+}
+
+function handleDrop(ev, slotIndex) {
+    ev.preventDefault();
+    const optIndex = ev.dataTransfer.getData("optionIndex");
+    if (optIndex !== null && optIndex !== undefined && availableOptions[optIndex] !== null) {
+        selectedOptionIndex = parseInt(optIndex);
+        placeInSlot(slotIndex);
+    }
+}
+
 function checkDropzoneAnswer() {
     if (targetSlots.includes(null)) {
         if (typeof playVO === 'function') playVO('salah');
@@ -398,6 +483,7 @@ function renderMatchingChallenge() {
         </p>
 
         <div style="display:flex; gap:30px; justify-content:center; align-items:center;">
+            <!-- KOLOM INDUK (KIRI) -->
             <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;">
                 ${matchingParents.map((parent) => {
                     const isSelected = selectedParent === parent.id;
@@ -416,6 +502,7 @@ function renderMatchingChallenge() {
 
             <div style="font-size:1.8rem; font-weight:900; color:#5a382d;">➡️</div>
 
+            <!-- KOLOM ANAK (KANAN) -->
             <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;">
                 ${matchingChildren.map((child) => {
                     const isSelected = selectedChild === child.id;
@@ -461,18 +548,22 @@ function tryAutoMatch() {
 }
 
 function checkMatchingAnswer() {
-    if (Object.keys(userMatches).length < 4) {
+    if (Object.keys(userMatches).length < matchingParents.length) {
         if (typeof playVO === 'function') playVO('salah');
-        showPopup('SALAH', 'Jodohkan ke-4 pasangan Induk dan Anak terlebih dahulu ya!');
+        showPopup('SALAH', 'Jodohkan semua pasangan Induk dan Anak terlebih dahulu ya!');
         return;
     }
 
-    const isCorrect = userMatches['sapi'] === 'sapi' && 
-                      userMatches['kambing'] === 'kambing' && 
-                      userMatches['ayam'] === 'ayam' && 
-                      userMatches['bebek'] === 'bebek';
+    // Periksa kebenaran setiap pasangan yang dibuat murid
+    let isAllCorrect = true;
+    for (let parentId in userMatches) {
+        if (userMatches[parentId] !== parentId) {
+            isAllCorrect = false;
+            break;
+        }
+    }
                       
-    evalAnswer(isCorrect);
+    evalAnswer(isAllCorrect);
 }
 
 // ==========================================
