@@ -115,7 +115,6 @@ function resetWheelFull() {
     drawWheel();
     currentStudent = "Nama Siswa";
     document.getElementById('activeStudentLabel').innerText = `Detektif: Siap Berputar!`;
-    // Isi ulang antrean soal agar bersih kembali
     initQueues();
 }
 
@@ -292,7 +291,7 @@ function initQueues() {
 // Inisialisasi awal saat dimuat
 initQueues();
 
-// LOGIKA PEMILIHAN TANTANGAN (1, 2, 4 diperbanyak, 3 & 5 sesuai kuota 14 siswa)
+// LOGIKA PEMILIHAN TANTANGAN
 function openMysteryBox() {
     if (typeof playVO === 'function') playVO('buka_kotak');
     
@@ -719,7 +718,6 @@ window.onload = function() {
     drawWheel();
     document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
     
-    // Tambahkan Tombol Reset Roda Manual di Tampilan Utama Roda jika diinginkan guru
     const wheelScreen = document.getElementById('screenWheel');
     if (wheelScreen && !document.getElementById('btnManualReset')) {
         const resetBtn = document.createElement('div');
