@@ -8,7 +8,7 @@ let remainingStudents = [
     "Suci Indriyani", "Tania", "Ulufiyah", "Zea"
 ];
 
-// Skor awal seluruh murid
+// Skor awal untuk seluruh murid
 const allStudentsList = [...remainingStudents];
 let scores = {};
 allStudentsList.forEach(s => scores[s] = 0);
@@ -69,7 +69,7 @@ let currentRotation = 0;
 function spinWheel() {
     if (isSpinning) return;
     
-    // Reset daftar murid jika semua sudah mendapat giliran
+    // Jika semua murid sudah selesai giliran, reset ulang daftar murid
     if (remainingStudents.length === 0) {
         remainingStudents = [...allStudentsList];
         drawWheel();
@@ -92,9 +92,11 @@ function spinWheel() {
         const sliceSize = 360 / remainingStudents.length;
         const selectedIndex = Math.floor((360 - (actualDeg % 360) + 270) % 360 / sliceSize) % remainingStudents.length;
         
+        // Ambil murid terpilih & hapus dari daftar giliran
         currentStudent = remainingStudents[selectedIndex];
         remainingStudents.splice(selectedIndex, 1);
         
+        // Render ulang roda tanpa murid yang baru terpilih
         drawWheel();
         
         document.getElementById('activeStudentLabel').innerText = `Detektif: ${currentStudent}`;
@@ -183,7 +185,7 @@ const cycleBank = [
     }
 ];
 
-// Databank 5 Misi Tantangan 5 (10 Aset Anak Hewan dibagi 5 Misi x 2 Hewan)
+// Databank 5 Misi Tantangan 5 (Tepat 2 Pasang Hewan per Misi)
 const matchingMissions = [
     {
         missionName: "Misi 1: Hewan Ternak Besar",
@@ -297,7 +299,7 @@ function loadChallenge(type) {
             </div>
         `;
     } else if (type === 3) {
-        // TANTANGAN 3: Urutkan Siklus Hidup (Drag & Drop + Dropzone)
+        // TANTANGAN 3: Urutkan Siklus Hidup
         const cycle = cycleBank[Math.floor(Math.random() * cycleBank.length)];
         title.innerText = `Tantangan 3: Urutkan Siklus Hidup ${cycle.title}!`;
         
@@ -474,7 +476,7 @@ function checkDropzoneAnswer() {
 }
 
 // ==========================================
-// LOGIKA TANTANGAN 5 (MATCHING GAME)
+// LOGIKA TANTANGAN 5 (MATCHING GAME - TEPAT 2 HEWAN)
 // ==========================================
 let matchingParents = [];
 let matchingChildren = [];
@@ -485,51 +487,53 @@ let userMatches = {};
 function renderMatchingChallenge() {
     const body = document.getElementById('challengeBody');
     body.innerHTML = `
-        <p style="font-weight:800; font-size:0.95rem; margin-bottom:6px;">
+        <p style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">
             Sentuh 1 Induk di sebelah kiri, lalu sentuh Anaknya yang cocok di sebelah kanan!
         </p>
 
-        <div style="display:flex; gap:30px; justify-content:center; align-items:center;">
-            <!-- KOLOM INDUK (KIRI) -->
-            <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; gap:50px; justify-content:center; align-items:center; margin:10px 0;">
+            <!-- KOLOM INDUK (KIRI - HANYA 2 PASANG) -->
+            <div style="display:flex; flex-direction:column; gap:15px;">
                 ${matchingParents.map((parent) => {
                     const isSelected = selectedParent === parent.id;
                     const isMatched = userMatches[parent.id] !== undefined;
                     return `
                         <div onclick="selectParent('${parent.id}')" 
-                             style="width:130px; padding:6px; background:#ffe066; 
-                                    border:${isSelected ? '4px solid #ff0054' : isMatched ? '4px solid #38b000' : '3px solid #8a4819'}; 
-                                    border-radius:12px; cursor:pointer; text-align:center;">
-                            <img src="${parent.img}" style="width:100%; height:75px; object-fit:cover; border-radius:8px;">
-                            <span style="font-size:0.85rem; font-weight:800; display:block; margin-top:2px;">${parent.name}</span>${isMatched ? '<span style="font-size:0.75rem; color:#38b000; font-weight:800;">✓ Ok</span>' : ''}
+                             style="width:150px; padding:8px; background:#ffe066; 
+                                    border:${isSelected ? '5px solid #ff0054' : isMatched ? '5px solid #38b000' : '4px solid #8a4819'}; 
+                                    border-radius:18px; cursor:pointer; text-align:center; transition:all 0.2s;
+                                    transform:${isSelected ? 'scale(1.05)' : 'scale(1)'};">
+                            <img src="${parent.img}" style="width:100%; height:95px; object-fit:cover; border-radius:10px;">
+                            <span style="font-size:0.95rem; font-weight:800; display:block; margin-top:4px;">${parent.name}</span>${isMatched ? '<span style="font-size:0.8rem; color:#38b000; font-weight:800;">✓ Terjodohkan</span>' : ''}
                         </div>
                     `;
                 }).join('')}
             </div>
 
-            <div style="font-size:2rem; font-weight:900; color:#5a382d;">➡️</div>
+            <div style="font-size:2.5rem; font-weight:900; color:#5a382d;">➡️</div>
 
-            <!-- KOLOM ANAK (KANAN) -->
-            <div style="display:flex; flex-direction:column; gap:10px;">
+            <!-- KOLOM ANAK (KANAN - HANYA 2 PASANG DIACAK) -->
+            <div style="display:flex; flex-direction:column; gap:15px;">
                 ${matchingChildren.map((child) => {
                     const isSelected = selectedChild === child.id;
                     const isMatched = Object.values(userMatches).includes(child.id);
                     return `
                         <div onclick="selectChild('${child.id}')" 
-                             style="width:130px; padding:6px; background:#ffe066; 
-                                    border:${isSelected ? '4px solid #ff0054' : isMatched ? '4px solid #38b000' : '3px solid #8a4819'}; 
-                                    border-radius:12px; cursor:pointer; text-align:center;">
-                            <img src="${child.img}" style="width:100%; height:75px; object-fit:cover; border-radius:8px;">
-                            <span style="font-size:0.85rem; font-weight:800; display:block; margin-top:2px;">${child.name}</span>${isMatched ? '<span style="font-size:0.75rem; color:#38b000; font-weight:800;">✓ Ok</span>' : ''}
+                             style="width:150px; padding:8px; background:#ffe066; 
+                                    border:${isSelected ? '5px solid #ff0054' : isMatched ? '5px solid #38b000' : '4px solid #8a4819'}; 
+                                    border-radius:18px; cursor:pointer; text-align:center; transition:all 0.2s;
+                                    transform:${isSelected ? 'scale(1.05)' : 'scale(1)'};">
+                            <img src="${child.img}" style="width:100%; height:95px; object-fit:cover; border-radius:10px;">
+                            <span style="font-size:0.95rem; font-weight:800; display:block; margin-top:4px;">${child.name}</span>${isMatched ? '<span style="font-size:0.8rem; color:#38b000; font-weight:800;">✓ Terjodohkan</span>' : ''}
                         </div>
                     `;
                 }).join('')}
             </div>
         </div>
 
-        <div style="margin-top:10px; display:flex; gap:12px; justify-content:center;">
-            <button class="btn-green-3d" style="font-size:1.1rem; padding:8px 25px;" onclick="checkMatchingAnswer()">COCOKKAN!</button>
-            <button class="btn-top" style="background:#d90429; font-size:0.95rem; padding:8px 15px;" onclick="loadChallenge(5)">🔄 Reset</button>
+        <div style="margin-top:15px; display:flex; gap:15px; justify-content:center;">
+            <button class="btn-green-3d" style="font-size:1.2rem; padding:10px 30px;" onclick="checkMatchingAnswer()">COCOKKAN!</button>
+            <button class="btn-top" style="background:#d90429; font-size:1rem; padding:10px 20px;" onclick="loadChallenge(5)">🔄 Reset</button>
         </div>
     `;
 }
@@ -555,7 +559,7 @@ function tryAutoMatch() {
 }
 
 function checkMatchingAnswer() {
-    if (Object.keys(userMatches).length < matchingParents.length) {
+    if (Object.keys(userMatches).length < 2) {
         if (typeof playVO === 'function') playVO('salah');
         showPopup('SALAH', 'Jodohkan kedua pasangan Induk dan Anak terlebih dahulu ya!');
         return;
